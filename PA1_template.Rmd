@@ -11,6 +11,7 @@ require(dplyr)
 require(ggplot2)
 require(grid)
 require(gridExtra)
+require(chron)
 ```
 
 ## Loading and preprocessing the data
@@ -32,7 +33,11 @@ rawData <- rawData %>%
 dayData <- rawData %>%
         group_by(parsedDate) %>%
                 summarise(daySum = sum(steps, na.rm=TRUE))
-                 
+
+```
+
+```{r fig.width=9}       
+          
 p1 <- ggplot(dayData) +
         geom_histogram(aes(x=parsedDate, y=daySum, fill=daySum), stat="identity") +
         scale_fill_gradient("Steps", low = "green", high = "red") +
@@ -60,7 +65,7 @@ and the value is `r medianValue ` (Steps / Day)
 
 ## What is the average daily activity pattern?
 
-```{r} 
+```{r fig.width=9} 
 
 avgPattern <- rawData %>%
         group_by(interval) %>%
@@ -85,7 +90,7 @@ At interval `r intervalMax  ` we have the maximum value> `r maxSteps `
 
 total number of 'NA' values is `r sum(is.na(rawData$steps))  `
 
-```{r}
+```{r fig.width=9}
 
 replaceNaData <- rawData %>%
         group_by(parsedDate) %>%
@@ -129,7 +134,7 @@ and the value is `r medianValue2 ` (Steps / Day)
 
 ###Now a comparision between rawData and 'NA' replaced Data.
 
-```{r}
+```{r fig.width=9}
 
 p1 <- p1 +
         theme(legend.position="none") 
@@ -143,3 +148,25 @@ grid.arrange(p1, p2, nrow=1, ncol=2)
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+```{r fig.width=9}
+
+replaceNaData <- replaceNaData %>% 
+        mutate(dayType=as.factor(
+                ifelse(
+                        is.weekend(
+                                rawData$parsedDate), 
+                        "WEEKEND", 
+                        "WEEKDAY" )))
+
+
+weekDayAndWeekend <- replaceNaData %>%
+        group_by(interval, dayType) %>%
+        summarise(weekSteps=sum(steps))
+
+ggplot(weekDayAndWeekend, aes(x=interval, y=weekSteps)) +
+        geom_line() +
+        facet_grid(dayType~.,scales="free_x") +
+        labs(x="Interval", y="Steps")
+
+```
