@@ -1,5 +1,7 @@
 # Reproducible Research: Peer Assessment 1
 
+these are the R libreary used in this analysis:
+
 
 ```r
 require(dplyr)
@@ -10,6 +12,9 @@ require(chron)
 ```
 
 ## Loading and preprocessing the data
+
+All the observations are loaded from the Comma separated file "activity.csv" 
+This is the R code used to load the data, after a summary of the Data Frame loaded.
 
 
 ```r
@@ -29,6 +34,8 @@ summary(rawData)
 ```
 
 ## What is mean total number of steps taken per day?
+    
+The first step to answer the question is to adapt this data for the analysis, is to create a column fo Date type for gouping datas; after data are grouped by day and the steps are summarised excluding NAs.
 
 
 ```r
@@ -39,6 +46,9 @@ dayData <- rawData %>%
         group_by(parsedDate) %>%
                 summarise(daySum = sum(steps, na.rm=TRUE))
 ```
+
+This plot represent the sum of steps group by day, the number of steps is olso 
+coloured with a gradient to enphasize higher values.
 
 
 ```r
@@ -91,11 +101,11 @@ intervalMax <- avgPattern[which.max(avgPattern$avgStep),]$interval
 maxSteps <- avgPattern[avgPattern == intervalMax,]$avgStep
 ```
 
-At interval 835 we have the maximum value> 206.1698113
+For the  interval of 835 minute we have the maximum value: 206.1698113 Steps
 
 ## Imputing missing values
 
-total number of 'NA' values is 2304
+The total number of 'NA' values is 2304, for replacing NAs values with a reasonable value, i use the mean of the steps per day. replaceNaData contains the data without NAs.
 
 
 ```r
@@ -109,7 +119,12 @@ replaceNaData <- rawData %>%
 dayDataWithNoNa <- replaceNaData %>%
         group_by(parsedDate) %>%
                 summarise(daySumWithNoNa = sum(steps, na.rm=TRUE))
-                 
+```
+
+As with the graph of the data with the NAs values this graph is coloured with a gradient of color to enphasize the number of steps.
+
+
+```r
 p2 <- ggplot(dayDataWithNoNa) +
         geom_histogram(
                 aes(x=parsedDate, 
@@ -122,7 +137,7 @@ p2 <- ggplot(dayDataWithNoNa) +
 print(p2)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-9-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-10-1.png) 
 
 The value of the mean per day int the dataset without NAs is calculated with this statement:
 
@@ -142,7 +157,9 @@ medianValue2 <- median(dayDataWithNoNa$daySumWithNoNa)
 
 and the value is 1.0766189\times 10^{4} (Steps / Day) 
 
-###Now a comparision between rawData and 'NA' replaced Data.
+###Comparision between rawData and 'NA' replaced Data.
+
+For help the understanding of the differenze between the Data Frame with the NAs values and the NAs replaced wit the meand per day of the values, in the next plot, i place side by side the precending graph. 
 
 
 ```r
@@ -156,9 +173,12 @@ p2 <- p2 +
 grid.arrange(p1, p2, nrow=1, ncol=2)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-12-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-13-1.png) 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+I create a factor column in the data frame to distinguish week day from weekend day after, with ggplot i produce two line graphs for the comparison.
+The difference from week dasys steps and week end days steps is that the week days are condensed in the morning due to the works activity. The steps in the week end are distribuited in a uniform manner.
 
 
 ```r
@@ -181,4 +201,4 @@ ggplot(weekDayAndWeekend, aes(x=interval, y=weekSteps)) +
         labs(x="Interval", y="Steps")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-13-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-14-1.png) 
