@@ -162,7 +162,7 @@ replaceNaData <- replaceNaData %>%
 
 weekDayAndWeekend <- replaceNaData %>%
         group_by(interval, dayType) %>%
-        summarise(weekSteps=sum(steps))
+        summarise(weekSteps=mean(steps))
 
 ggplot(weekDayAndWeekend, aes(x=interval, y=weekSteps)) +
         geom_line() +
