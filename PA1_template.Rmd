@@ -117,7 +117,7 @@ dayDataWithNoNa <- replaceNaData %>%
 
 As with the graph of the data with the NAs values this graph is coloured with a gradient of color to enphasize the number of steps.
 
-```{r}
+```{r fig.width=9}
 
 p2 <- ggplot(dayDataWithNoNa) +
         geom_histogram(
